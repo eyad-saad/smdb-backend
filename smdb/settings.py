@@ -72,7 +72,7 @@ CORS_ALLOWED_ORIGINS = [
 
 ROOT_URLCONF = 'smdb.urls'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media/')
-MEDIA_URL = '/media/'
+MEDIA_URL = '/'
 
 TEMPLATES = [
     {

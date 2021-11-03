@@ -26,6 +26,16 @@ class GenreSerializer(ModelSerializer):
         fields = ['id', 'name']
 
 
+class BuyMovieSerializer(Serializer):
+    first_name = serializers.CharField()
+    last_name = serializers.CharField()
+    email = serializers.CharField()
+    credit_card = serializers.CharField()
+
+    class Meta:
+        fields = ['first_name', 'last_name', 'email', 'credit_card']
+
+
 class MovieSerialzier(Serializer):
     id = serializers.IntegerField()
     title = serializers.CharField()

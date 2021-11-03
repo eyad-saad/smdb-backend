@@ -45,4 +45,5 @@ class Genre(models.Model):
 class UserMovie(models.Model):
     user = models.ForeignKey('auth.User', on_delete=models.CASCADE)
     movie = models.ForeignKey('core.Movie', on_delete=models.CASCADE)
-    rating = models.FloatField(max_length=5)
+    rating = models.FloatField(max_length=5, null=True)
+    bought = models.BooleanField()

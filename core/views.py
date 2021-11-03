@@ -2,6 +2,7 @@ from django.contrib.auth import authenticate
 from django.contrib.auth.models import User
 from django.db.models import Q
 from django.shortcuts import render
+from rest_framework import status
 
 # Create your views here.
 from rest_framework.exceptions import APIException
@@ -12,7 +13,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from core.models import Movie, UserMovie
-from core.serializers import MovieSerialzier, RatingSerializer, UserSerializer, ActorSerializer, DirectorSerializer
+from core.serializers import MovieSerialzier, RatingSerializer, UserSerializer, ActorSerializer, DirectorSerializer, BuyMovieSerializer
 
 
 class Movies(APIView):
@@ -31,8 +32,7 @@ class Movies(APIView):
                                           | Q(genres__name__startswith=search_term)
 
                                           )
-        # else:
-        #     movies = Movie.objects.all()
+
         paginator = PageNumberPagination()
         paginator.page_size = 10
         result_page = paginator.paginate_queryset(movies, request)
@@ -88,3 +88,22 @@ class Register(CreateAPIView):
         AllowAny,
     ]
     serializer_class = UserSerializer
+
+
+class BuyMovie(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, pk):
+        user = request.user
+        movie = Movie.objects.get(pk=pk)
+        serializer = BuyMovieSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        user_movie_object = UserMovie.objects.filter(user=user, movie=movie)
+        if not user_movie_object:
+            UserMovie.objects.create(user=user, movie=movie, bought=True)
+        if user_movie_object and user_movie_object[0].bought is True:
+            raise APIException("already bought")
+        if user_movie_object:
+            user_movie_object[0].bought = True
+            user_movie_object[0].save()
+        return Response({'detail': 'success'}, status=status.HTTP_200_OK)

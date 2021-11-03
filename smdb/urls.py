@@ -28,6 +28,7 @@ urlpatterns = [
     path('movies/<int:pk>', views.MovieDetail.as_view()),
     path('movies/<int:pk>/actors', views.Actors.as_view()),
     path('movies/<int:pk>/directors', views.Directors.as_view()),
+    path('movies/<int:pk>/buy', views.BuyMovie.as_view()),
     path('login', obtain_auth_token),
     path('register', Register.as_view()),
 ]
