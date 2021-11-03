@@ -17,16 +17,22 @@ from core.serializers import MovieSerialzier, RatingSerializer, UserSerializer, 
 
 class Movies(APIView):
     def get(self, request):
+        filter_term = request.GET.get('filter')
+        if filter_term:
+            movies = Movie.objects.filter(title__startswith=filter_term)
+        else:
+            movies = Movie.objects.all()
+
         search_term = request.GET.get('search-term')
         if search_term:
-            movies = Movie.objects.filter(Q(actors__name__startswith=search_term)
+            movies = movies.filter(Q(actors__name__startswith=search_term)
                                           | Q(directors__name__startswith=search_term)
                                           | Q(title__startswith=search_term)
                                           | Q(genres__name__startswith=search_term)
 
                                           )
-        else:
-            movies = Movie.objects.all()
+        # else:
+        #     movies = Movie.objects.all()
         paginator = PageNumberPagination()
         paginator.page_size = 10
         result_page = paginator.paginate_queryset(movies, request)

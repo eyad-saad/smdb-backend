@@ -5,7 +5,7 @@ from rest_framework.fields import SerializerMethodField
 from rest_framework.serializers import Serializer, ModelSerializer
 from rest_framework.authtoken.models import Token
 
-from core.models import UserMovie, Actor, Director, Genre
+from core.models import UserMovie, Actor, Director, Genre, Costumer
 
 
 class ActorSerializer(ModelSerializer):
@@ -36,12 +36,13 @@ class MovieSerialzier(Serializer):
     directors = DirectorSerializer(many=True)
     genres = GenreSerializer(many=True)
     average_rating = SerializerMethodField()
+    price = serializers.IntegerField()
 
     def get_average_rating(self, obj):
         return UserMovie.objects.filter(movie=obj).aggregate(Avg('rating'))['rating__avg']
 
     class Meta:
-        fields = ['id', 'title', 'image', 'backdrop', 'overview', 'actors', 'directors, genres']
+        fields = ['id', 'title', 'image', 'backdrop', 'overview', 'actors', 'directors, genres', 'price']
 
 
 class RatingSerializer(ModelSerializer):
@@ -54,14 +55,19 @@ class UserSerializer(serializers.ModelSerializer):
 
     password = serializers.CharField(write_only=True)
     token = serializers.SerializerMethodField()
+    date_of_birth = serializers.DateField(write_only=True)
+    marital_status= serializers.CharField(write_only=True)
+    email = serializers.CharField(write_only=True)
 
     def create(self, validated_data):
 
         user = User.objects.create_user(
             username=validated_data['username'],
             password=validated_data['password'],
+            email=validated_data['email'],
         )
-
+        costumer = Costumer.objects.create(user=user, date_of_birth=validated_data['date_of_birth'],
+                                           marital_status=validated_data['marital_status'])
         return user
 
     def get_token(self, obj):
@@ -71,5 +77,5 @@ class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         # Tuple of serialized model fields (see link [2])
-        fields = ( "id", "username", "password", "token" )
+        fields = ( "id", "username", "password", "token", "date_of_birth", "marital_status", "email" )
 

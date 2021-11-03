@@ -7,6 +7,12 @@ from django.db.models import ManyToManyField
 # class Costumer(models.Model):
 #     user = models.ForeignKey('auth.User', on_delete=models.CASCADE)
 
+class Costumer(models.Model):
+    user = models.ForeignKey('auth.User', on_delete=models.CASCADE)
+    date_of_birth = models.DateField()
+    marital_status = models.CharField(max_length=10)
+
+
 
 class Movie(models.Model):
     title = models.CharField(max_length=100)
@@ -17,7 +23,7 @@ class Movie(models.Model):
     user_ratings = models.ManyToManyField('auth.User', blank=True, through='core.UserMovie')
     overview = models.TextField()
     genres = models.ManyToManyField('core.Genre', blank=True)
-
+    price = models.IntegerField()
 
 class Actor(models.Model):
     name = models.CharField(max_length=100)
